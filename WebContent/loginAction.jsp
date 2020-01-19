@@ -13,10 +13,24 @@
 <title>jsp 게시판 웹 사이트</title>
 
 <body>
-	<%
+	<%	
+		String userID = null;
+		if(session.getAttribute("userID")!=null){
+			userID = (String)session.getAttribute("userID");
+		}
+		
+		//로그인이 되어있을 경우 또 다시 로그인을 하지 않도록 막아줌.
+		if(userID != null){
+			PrintWriter script = response.getWriter();
+			script.println("<script>");
+			script.println("alert('이미 로그인이 되어있습니다.')");
+			script.println("location.href = 'main.jsp'");
+			script.println("</script>");			
+		}
 		UserDAO userDAO = new UserDAO();
 		int result = userDAO.login(user.getUserID(), user.getUserPassword());
 		if(result == 1){
+			session.setAttribute("userID", user.getUserID());
 			PrintWriter script = response.getWriter();
 			script.println("<script>");
 			script.println("location.href = 'main.jsp'");

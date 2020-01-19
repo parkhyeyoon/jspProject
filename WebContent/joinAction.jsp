@@ -34,6 +34,7 @@
 				script.println("history.back()");
 				script.println("</script>");
 			}else if(result == 1){
+				session.setAttribute("userID", user.getUserID());
 				PrintWriter script = response.getWriter();
 				script.println("<script>");
 				script.println("alert('회원가입되었습니다..')");

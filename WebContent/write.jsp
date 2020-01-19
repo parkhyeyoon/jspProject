@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ page import = "java.io.PrintWriter" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,6 +15,12 @@
 <title>JSP 게시판 웹 사이트</title>
 </head>
 <body>
+	<%	//userID 값이 빈값이 아니면 해당 세션 값을 계속 유지
+		String userID = null;
+		if(session.getAttribute("userID") != null){
+			userID = (String)session.getAttribute("userID");
+		}
+	%>
 	<nav class = "navbar navbar-default">
 		<div class = "navbar-header">
 			<button type = "button" class = "navbar-toggle collapsed"
@@ -28,42 +35,69 @@
 		<div class ="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class = "nav navbar-nav">
 				<li><a href="main.jsp">메인</a>
-				<li><a href="bbs.jsp">게시판</a>
+				<li class = "active"><a href="bbs.jsp">게시판</a>
 			</ul>
+			<%  //userID 값이 null 이면 접속하기 드롭다운 메뉴를 보여줌 
+				if(userID  == null ){ 
+			%>
 			<ul>
 				<li class ="dropdown">
 					<a href= "#" class = "dropdown-toggle" 
 					   data-toggle="dropdown" role ="button" aria-haspopup="true"
 					   aria-expanded="false">접속하기<span class="caret"></span></a>
 					<ul class="dropdown-menu">
-						<li class="active"><a href="login.jsp">로그인</a></li>
+						<li><a href="login.jsp">로그인</a></li>
 						<li><a href="join.jsp">회원가입</a></li>
 					</ul>
 				</li>
 			</ul>			
+			<%
+				}else{				
+			%>
+			<ul>
+				<li class ="dropdown">
+					<a href= "#" class = "dropdown-toggle" 
+					   data-toggle="dropdown" role ="button" aria-haspopup="true"
+					   aria-expanded="false">회원관리<span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="logoutAction.jsp">로그아웃</a></li>
+					</ul>
+				</li>
+			</ul>				
+			<%			
+				}
+			%>
+			
 		</div>
 	</nav>
-	<div class = "container">
-		<div class = "col-lg-4"></div>
-		<div class = "col-lg-4">
-			<div class = "jsmbotron" style="padding-top: 20px;">
-				<!-- loginAction 페이지로 로그인 정보를 보내기 위한 form -->
-				<form method = "post" action="loginAction.jsp">
-					<h3 style="text-align: center;">로그인화면</h3>
-					<div class="form-group"> 
-						<input type="text" class = "form-control" placeholder = "아이디 " name = "userID" maxlength="20">
-					</div>
-					<div class="form-group"> 
-						<input type="password" class = "form-control" placeholder = "비밀번호" " name = "userPassword" maxlength="20">
-					</div>
-					<input type="submit" class="btn btn-primary form-control" value ="로그인">
-				</form>
-			</div>
+	<div class ="container">
+		<div class = "row">
+		<form method = "post" action = "writeAction.jsp">		
+			<table class = "table table-striped" style= "text-align: center;border : 1px solid #dddddd">
+				<thead>
+					<tr>
+						<th colspan = "2" style = "background-color: #eeeeee; text-align : center;">게시판글쓰기양식</th>
+					</tr>	
+				</thead>
+				<tbody>
+					<tr>
+						<td><input type = "text" class ="form-control" placeholder = "글제목" name = "bbsTitle" maxlenght= "50"></td>
+					</tr>
+					<tr>
+						<td><textarea class ="form-control" placeholder = "글내용" name = "bbsContent" maxlenght= "4000" style = "height:350px;"></textarea></td>
+					</tr>
+					<tr>
+						<td>
+							<input type= "submit" class = "btn btn-primary pull-right" value = "글쓰기">
+						</td>
+					</tr>
+				</tbody>
+				
+			</table>
+		</form>
 		</div>
-		<div class = "col-lg-4"></div>
 	</div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>	
 </body>
 </html>
