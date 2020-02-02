@@ -11,6 +11,7 @@
 <!-- 부트스트랩 반응형 웹 메타 태그 -->
 <meta name = viewport" content = "width=device-width", initial-scale = "1">
 <link rel="stylesheet" href="css/bootstrap.min.css"> 
+<link rel="stylesheet" href="css/common.css"> 
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <!-- Optional theme -->
@@ -117,7 +118,7 @@
 					</tr>
 				</tbody>
 			</table>
-			<a href = "bbs.jsp" class = btn btn-primary">목록</a>
+			<a href = "bbs.jsp" class = "btn btn-primary">목록</a>
 			
 			<!-- 해당글의 유저 id와 동일하다면 삭제와 수정이 가능함. -->
 			<% 
