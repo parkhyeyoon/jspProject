@@ -140,6 +140,37 @@ public class BbsDAO {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;			
+		return null; // 데이터 값이 없을 경우 			
+	}
+	
+	
+	public int update(int bbsID, String bbsTitle, String bbsContent , String userID) {
+		String SQL = "UPDATE BBS SET bbsTitle = ?, bbsContent = ? WHERE bbsID = ? AND userID = ?";
+		
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, bbsTitle);
+			pstmt.setString(2, bbsContent);
+			pstmt.setInt(3, bbsID);
+			pstmt.setString(4, userID);
+		    return pstmt.executeUpdate();			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return -1; 
+	}
+	
+	public int deleteAction(int bbsID, String userID) {
+		String SQL = "DELETE FROM BBS WHERE userID = ? AND bbsID = ?";
+		
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, userID);
+			pstmt.setInt(2, bbsID);
+		    return pstmt.executeUpdate();			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}				
+		return -1;
 	}
 }

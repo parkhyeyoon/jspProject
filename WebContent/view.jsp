@@ -1,9 +1,9 @@
+<%@page import="sun.security.mscapi.PRNG"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import = "java.io.PrintWriter" %>
-<%@ page import = "bbs.BbsDAO" %>
 <%@ page import = "bbs.Bbs" %>
-<%@ page import = "java.util.ArrayList" %>
+<%@ page import = "bbs.BbsDAO" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,12 +16,7 @@
 <!-- Optional theme -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 <title>JSP 게시판 웹 사이트</title>
-<style type ="text/css">
-	a, a:hover{
-		color : "#eeeeee";
-		text-decoration: none;
-	}
-</style></head>
+</head>
 <body>
 	<%	//userID 값이 빈값이 아니면 해당 세션 값을 계속 유지
 		String userID = null;
@@ -29,11 +24,21 @@
 			userID = (String)session.getAttribute("userID");
 		}
 		
-		int pageNumber = 1; // 기본 1페이지임
-		if(request.getParameter("pageNumber") != null){
-			String pageNubmerStr = request.getParameter("pageNumber").trim();
-			pageNumber = Integer.parseInt(pageNubmerStr);
+		int bbsID = 0;
+		if(request.getParameter("bbsID")!=null){
+			bbsID = Integer.parseInt(request.getParameter("bbsID"));
 		}
+		
+		if(bbsID == 0){
+			PrintWriter script= response.getWriter();
+			script.println("<script>");
+			script.println("alert('유효하지않는 게시물입니다.')");
+			script.println("location.href = 'bbs.jsp'");
+			script.println("<script>");
+		}
+		
+		Bbs bbs = new BbsDAO().getBbs(bbsID);
+		
 	%>
 	<nav class = "navbar navbar-default">
 		<div class = "navbar-header">
@@ -86,50 +91,44 @@
 	</nav>
 	<div class ="container">
 		<div class = "row">
+		<form method = "post" action = "writeAction.jsp">		
 			<table class = "table table-striped" style= "text-align: center;border : 1px solid #dddddd">
 				<thead>
 					<tr>
-						<th style = "background-color: #eeeeee; text-align : center">번호</th>
-						<th style = "background-color: #eeeeee; text-align : center">제목</th>
-						<th style = "background-color: #eeeeee; text-align : center">작성자</th>
-						<th style = "background-color: #eeeeee; text-align : center">작성일</th>
+						<th colspan = "2" style = "background-color: #eeeeee; text-align : center;">게시판 글보기</th>
 					</tr>	
 				</thead>
 				<tbody>
-					<% 
-						BbsDAO bbsDAO = new BbsDAO();
-						ArrayList<Bbs> list = bbsDAO.getList(pageNumber);
-						for(int i = 0; i<list.size(); i++){
-					%>
 					<tr>
-						<td><%=list.get(i).getBbsID() %></td>
-						<!-- 제목을 누를 경우 해당 게시글의 내용을 볼 수 있도록 이동 -->
-						<td><a href = "view.jsp?bbsID=<%=list.get(i).getBbsID() %>"><%=list.get(i).getBbsTitle() %></a></td>
-						<td><%=list.get(i).getUserID() %></td>
-						<td><%=list.get(i).getBbsDate().substring(0,11) + list.get(i).getBbsDate().substring(11,13) +"시"+
-							   list.get(i).getBbsDate().substring(14,16) +"분"%></td>		
+						<td style = "width: 20%;">글제목</td>
+						<td colspan = "2"><%= bbs.getBbsTitle().replaceAll(" ", "&nbsp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")%></td>							
 					</tr>
-					<%
-						}
-					%>
+					<tr>
+						<td>작성자</td>
+						<td colspan = "2"><%= bbs.getBbsID()%></td>
+					</tr>
+					<tr>
+						<td>작성일자</td>	
+						<td colspan = "2"><%= bbs.getBbsDate()%></td>						
+					</tr>
+					<tr>
+						<td>내용</td>	
+						<td colspan = "2"  style = "min-height:200px; text-align: left;"><%= bbs.getBbsContent().replaceAll(" ", "&nbsp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")%></td>						
+					</tr>
 				</tbody>
 			</table>
-			<%
-				if(pageNumber != 1){ //1페이지가 아니면 이전 버튼 활성화
-			%>
-				<a href = "bbs.jsp?pageNumber= <%=pageNumber - 1%>" class = "btn btn-success btn-arraw-left">이전</a>
+			<a href = "bbs.jsp" class = btn btn-primary">목록</a>
+			
+			<!-- 해당글의 유저 id와 동일하다면 삭제와 수정이 가능함. -->
 			<% 
-				}
-				
-				if(bbsDAO.nextPage(pageNumber+1)){ //
+				if(userID != null && userID.equals(bbs.getUserID())){
 			%>
-				<a href = "bbs.jsp?pageNumber= <%=pageNumber + 1%>" class = "btn btn-success btn-arraw-right">다음</a>
-			<%  
+					<a href = "update.jsp?bbsID=<%=bbsID%>" class = "btn btn-primary">수정</a>
+					<a href = "deleteAction.jsp?bbsID=<%=bbsID%>&userID=<%=userID%>" class = "btn btn-primary">삭제</a>
+			<%		
 				}
 			%>
-			<%	if(userID != null && userID != ""){ %>
-				<a href = "write.jsp" class ="btn btn-primary pull-right">글쓰기</a>
-		    <%  } %>
+		</form>
 		</div>
 	</div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
